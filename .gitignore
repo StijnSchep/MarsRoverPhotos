@@ -16,10 +16,3 @@
 .idea/misc.xml
 .idea/gradle.xml
 .idea/codeStyles/Project.xml
-settings.gradle
-gradlew.bat
-gradlew
-gradle.properties
-build.gradle
-gradle/wrapper/gradle-wrapper.jar
-gradle/wrapper/gradle-wrapper.properties
