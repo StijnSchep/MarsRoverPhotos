@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Mars Photos</string>
+    <string name="default_value">Value has not be altered</string>
+    <string name="image_id">Image ID: </string>
+    <string name="camera_name">Camera: </string>
+    <string name="rover_name">Rover:</string>
+    <string name="sol_day">Sol day:</string>
+    <string name="earth_day">Earth day:</string>
+
+    <string name="curiosity">Curiosity</string>
+    <string name="opportunity">Opportunity</string>
+    <string name="spirit">Spirit</string>
+</resources>

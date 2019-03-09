@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/rover_curiosity"
+        android:title="@string/curiosity"/>
+
+    <item
+        android:id="@+id/rover_opportunity"
+        android:title="@string/opportunity"/>
+
+    <item
+        android:id="@+id/rover_spirit"
+        android:title="@string/spirit"/>
+
+</menu>
