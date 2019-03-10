@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="pref_rovers">
+        <item>@string/curiosity</item>
+        <item>@string/opportunity</item>
+        <item>@string/spirit</item>
+    </array>
+
+    <array name="pref_language_labels">
+        <item>@string/device</item>
+        <item>@string/language_english</item>
+        <item>@string/dutch</item>
+    </array>
+
+    <array name="pref_language_keys">
+        <item>@string/default_language_key</item>
+        <item>@string/english_language_key</item>
+        <item>@string/dutch_language_key</item>
+    </array>
+
+
+</resources>

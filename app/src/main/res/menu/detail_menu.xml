@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-<item
-        android:id="@+id/rover_preferences"
-        android:title="@string/preferences"/>
 
+    <item android:id="@+id/share_button"
+        android:title="@string/share" />
 </menu>

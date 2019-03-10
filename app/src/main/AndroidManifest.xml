@@ -11,8 +11,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Presentation.PhotoDetailActivity"></activity>
-        <activity android:name=".Presentation.MainActivity">
+        <activity android:name=".Presentation.PreferenceActivity"></activity>
+        <activity android:name=".Presentation.PhotoDetailActivity" />
+        <activity android:name=".Presentation.MainActivity"
+            android:launchMode="singleTop"
+            android:configChanges="locale|layoutDirection">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

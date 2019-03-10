@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Mars Photos</string>
+    <string name="app_name">Mars</string>
     <string name="default_value">Value has not be altered</string>
     <string name="image_id">Image ID: </string>
     <string name="camera_name">Camera: </string>
@@ -7,7 +7,29 @@
     <string name="sol_day">Sol day:</string>
     <string name="earth_day">Earth day:</string>
 
-    <string name="curiosity">Curiosity</string>
-    <string name="opportunity">Opportunity</string>
-    <string name="spirit">Spirit</string>
+    <string name="curiosity" translatable="false">Curiosity</string>
+    <string name="opportunity" translatable="false">Opportunity</string>
+    <string name="spirit" translatable="false">Spirit</string>
+
+    <string name="preferences">Preferences</string>
+    <string name="preference_rover" translatable="false">preference_rover</string>
+    <string name="rover_title">Preferred rover</string>
+
+    <string name="language_preference_label">Language</string>
+    <string name="language_english">English</string>
+    <string name="dutch">Dutch</string>
+    <string name="device">Use device language</string>
+
+    <string name="default_language_key" translatable="false">default</string>
+    <string name="english_language_key" translatable="false">english</string>
+    <string name="dutch_language_key" translatable="false">dutch</string>
+    <string name="preference_language" translatable="false">language</string>
+
+    <string name="fetched_photo_toast_1">Fetched</string>
+    <string name="fetched_photo_toast_2">out of</string>
+    <string name="fetched_photo_toast_3">photos</string>
+
+    <string name="share">Share picture</string>
+
+    <string name="shareText">Oi mate, check out this image from the NASA space rover! I swear it\'s not malware:</string>
 </resources>

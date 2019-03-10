@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Mars</string>
+    <string name="default_value">Waarde is niet aangepast</string>
+    <string name="image_id">Foto ID:</string>
+    <string name="camera_name">Camera:</string>
+    <string name="rover_name">Rover:</string>
+    <string name="sol_day">Sol dag:</string>
+    <string name="earth_day">Aarde dag:</string>
+    <string name="preferences">Voorkeuren</string>
+    <string name="rover_title">Voorkeur rover</string>
+    <string name="language_preference_label">Taal</string>
+    <string name="language_english">Engels</string>
+    <string name="dutch">Nederlands</string>
+    <string name="device">Gebruik standaard taal</string>
+    <string name="fetched_photo_toast_1">"Opgehaald: "</string>
+    <string name="fetched_photo_toast_2">van de</string>
+    <string name="fetched_photo_toast_3">foto\'s</string>
+    <string name="share">Deel foto</string>
+    <string name="shareText">"Gegroet mijn beste kameraat, hierbij deel ik mede dat ik deze foto zeer frappant vind, kijk jij er ook even naar? "</string>
+</resources>

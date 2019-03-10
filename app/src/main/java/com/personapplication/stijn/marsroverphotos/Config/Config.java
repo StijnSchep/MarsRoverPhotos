@@ -1,5 +1,7 @@
 package com.personapplication.stijn.marsroverphotos.Config;
 
+import com.personapplication.stijn.marsroverphotos.R;
+
 public class Config {
 
     /* BEGIN URL VALUES */
@@ -52,6 +54,14 @@ public class Config {
     public static final String JSON_PHOTOS = "json";
 
     public static final String JSON_PHOTO = "json";
+
+    public static final String ROVER_PREFERENCE = "preference_rover";
+
+    public static final String LANGUAGE_PREFERENCE = "language";
+
+    public static final String LANGUAGE_DEFAULT = "default";
+    public static final String LANGUAGE_ENGLISH = "english";
+    public static final String LANGUAGE_DUTCH = "dutch";
 
     /* END EXTRAS VALUES  */
 
