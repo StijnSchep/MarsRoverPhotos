@@ -1,4 +1,4 @@
-package com.personapplication.stijn.marsroverphotos.Business;
+package com.personapplication.stijn.marsroverphotos.Business.Tools;
 
 import android.util.Log;
 

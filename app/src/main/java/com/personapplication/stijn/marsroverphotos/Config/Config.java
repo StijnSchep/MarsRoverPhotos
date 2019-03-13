@@ -74,4 +74,7 @@ public class Config {
 
     /* END ROVER NAMES */
 
+
+    // TODO Fix Detail Screen translation if it's loaded in portrait mode
+
 }

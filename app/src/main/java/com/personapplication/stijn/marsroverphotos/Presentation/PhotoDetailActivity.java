@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
+import com.personapplication.stijn.marsroverphotos.Business.LocaleHandler;
 import com.personapplication.stijn.marsroverphotos.Config.Config;
 import com.personapplication.stijn.marsroverphotos.Domain.Photo;
 import com.personapplication.stijn.marsroverphotos.R;
@@ -39,6 +40,8 @@ public class PhotoDetailActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        LocaleHandler.setLocale(this);
+        
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photo_detail);
 

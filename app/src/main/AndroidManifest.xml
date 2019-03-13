@@ -12,10 +12,16 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".Presentation.PreferenceActivity"></activity>
-        <activity android:name=".Presentation.PhotoDetailActivity" />
+        <activity android:name=".Presentation.PhotoDetailActivity">
+            <intent-filter>
+                <action android:name="Presentation.PhotoDetailActivity" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
         <activity android:name=".Presentation.MainActivity"
             android:launchMode="singleTop"
-            android:configChanges="locale|layoutDirection">
+            android:configChanges="layoutDirection">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

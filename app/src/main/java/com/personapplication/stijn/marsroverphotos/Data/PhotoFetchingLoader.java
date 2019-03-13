@@ -7,7 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
 
-import com.personapplication.stijn.marsroverphotos.Business.JsonParser;
+import com.personapplication.stijn.marsroverphotos.Business.Tools.JsonParser;
 import com.personapplication.stijn.marsroverphotos.Config.Config;
 import com.personapplication.stijn.marsroverphotos.Domain.Photo;
 

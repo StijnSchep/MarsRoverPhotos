@@ -3,7 +3,6 @@ package com.personapplication.stijn.marsroverphotos.Presentation;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -22,20 +21,19 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.jakewharton.processphoenix.ProcessPhoenix;
+import com.personapplication.stijn.marsroverphotos.Business.LocaleHandler;
 import com.personapplication.stijn.marsroverphotos.Business.PhotoAdapter;
-import com.personapplication.stijn.marsroverphotos.Business.URLBuilder;
+import com.personapplication.stijn.marsroverphotos.Business.PreferenceHandler;
+import com.personapplication.stijn.marsroverphotos.Business.Tools.URLBuilder;
 import com.personapplication.stijn.marsroverphotos.Config.Config;
 import com.personapplication.stijn.marsroverphotos.Data.PhotoFetchingLoader;
+import com.personapplication.stijn.marsroverphotos.Domain.LoaderMode;
 import com.personapplication.stijn.marsroverphotos.Domain.Photo;
 import com.personapplication.stijn.marsroverphotos.R;
 
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-
-import javax.xml.transform.OutputKeys;
 
 public class MainActivity extends AppCompatActivity implements
         PhotoFetchingLoader.LoaderListener,
@@ -44,32 +42,35 @@ public class MainActivity extends AppCompatActivity implements
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
+    //Views
     private ProgressBar mLoadingIndicator;
     private RecyclerView mPhotoRecyclerView;
 
-    private List<Photo> photos = new ArrayList<>();
-
-    public static Locale sSystemLocale;
-
+    //Flags
     private boolean showToast = true;
-    private boolean languageChanged;
+    private boolean languagePreferenceChanged;
 
+    //Data
+    private List<Photo> photos = new ArrayList<>();
     private PhotoAdapter photoAdapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d(TAG, "onCreate was called");
+        LocaleHandler.setLocale(this);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        //Set the language to the users preference
-        sSystemLocale = Locale.getDefault();
-        Log.d(TAG, "System language is: " + sSystemLocale.getLanguage());
-        setLocale();
+        Log.d(TAG, "onCreate was called");
 
         mLoadingIndicator = findViewById(R.id.pb_loading_response);
         mPhotoRecyclerView = findViewById(R.id.rv_photo_list);
+
+
+        /* -- RecyclerView setup -- */
+
+        photoAdapter = new PhotoAdapter(photos);
+        mPhotoRecyclerView.setAdapter(photoAdapter);
 
         //Set LayoutManager based on screen orientation
         if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
@@ -78,27 +79,26 @@ public class MainActivity extends AppCompatActivity implements
             mPhotoRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         }
 
-        photoAdapter = new PhotoAdapter(photos);
-        mPhotoRecyclerView.setAdapter(photoAdapter);
+        /* -- /RecyclerView setup -- */
 
-        //Check if a loader exists, Toast should not be shown if the result is not new
-        Loader previousLoader = getSupportLoaderManager().getLoader(Config.PHOTO_FETCHING_LOADER);
-        if(previousLoader == null) {
-            Log.d(TAG, "No previous loader was found");
-        } else {
-            Log.d(TAG, "Previous loader was found");
+
+        /* -- SharedPreferences setup -- */
+
+        SharedPreferences sharedPreferences =
+                PreferenceManager.getDefaultSharedPreferences(this);
+        sharedPreferences.registerOnSharedPreferenceChangeListener(this);
+
+        /* -- /SharedPreferences setup -- */
+
+
+        //If a previous loader exists, then the data is not new and no toast should be shown
+        if(getSupportLoaderManager().getLoader(Config.PHOTO_FETCHING_LOADER) != null) {
             showToast = false;
         }
 
+
         //Get the photos
-        getPhotos();
-    }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        Log.d(TAG, "onConfigurationChanged was called");
-
+        getPhotos(LoaderMode.INIT);
     }
 
     @Override
@@ -108,6 +108,8 @@ public class MainActivity extends AppCompatActivity implements
         Log.d(TAG, "Destroying activity, unregistering sharedpreferencelistener...");
         PreferenceManager.getDefaultSharedPreferences(this)
                 .unregisterOnSharedPreferenceChangeListener(this);
+
+
     }
 
     @Override
@@ -115,97 +117,21 @@ public class MainActivity extends AppCompatActivity implements
         super.onResume();
         Log.d(TAG, "onResume was called");
 
-        //If isNew is false, then the
-        if(languageChanged) {
+
+        //Check if the language preference changed
+        //If YES, refresh the activity to show changes
+        if(languagePreferenceChanged) {
+            languagePreferenceChanged = false;
+
+            Log.d(TAG, "Language preference changed, refreshing activity...");
+
             Intent intent = getIntent();
             finish();
             startActivity(intent);
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        Log.d(TAG, "Creating the options menu...");
 
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu, menu);
-
-        return true;
-    }
-
-    public boolean onOptionsItemSelected(MenuItem item) {
-        Log.d(TAG, "onOptionsItemSelected was called");
-
-        switch (item.getItemId()) {
-            case R.id.rover_preferences:
-                Intent startPreferencesActivity = new Intent(this, PreferenceActivity.class);
-                startActivity(startPreferencesActivity);
-                return true;
-
-                default:
-                    return super.onOptionsItemSelected(item);
-        }
-    }
-
-    //When the user selects a rover, restart the loader with new data
-    private void restartLoader() {
-        Log.d(TAG, "Started process to restart loader...");
-        showToast = true;
-
-        String rover = getRoverPreference();
-
-        URL photoURL = URLBuilder.buildPhotoFetchingURL(rover);
-
-        Bundle queryBundle = new Bundle();
-        queryBundle.putString(Config.SEARCH_QUERY_URL_EXTRA, photoURL.toString());
-
-        //Restart the loader with new data
-        Log.d(TAG, "Restarting loader...");
-        getSupportLoaderManager().restartLoader(Config.PHOTO_FETCHING_LOADER, queryBundle, this);
-    }
-
-    /* Starts the background task to get photos from a given rover */
-    private void getPhotos() {
-        Log.d(TAG, "Started process to fetch images...");
-
-        String rover = getRoverPreference();
-
-        URL photoURL = URLBuilder.buildPhotoFetchingURL(rover);
-
-        Bundle queryBundle = new Bundle();
-        queryBundle.putString(Config.SEARCH_QUERY_URL_EXTRA, photoURL.toString());
-
-        //Initialize the loader
-        Log.d(TAG, "Initializing loader...");
-        getSupportLoaderManager().initLoader(Config.PHOTO_FETCHING_LOADER, queryBundle, this);
-    }
-
-    //Returns the rover that is specified in the SharedPreference
-    private String getRoverPreference() {
-        Log.d(TAG, "Fetching preferred rover...");
-        SharedPreferences sharedPreferences =
-                PreferenceManager.getDefaultSharedPreferences(this);
-
-        sharedPreferences.registerOnSharedPreferenceChangeListener(this);
-
-        //Get preferred rover from SharedPreferences, return the value for 'curiosity' if no
-        //rover is specified as preferred
-        String rover = sharedPreferences.getString(Config.ROVER_PREFERENCE, Config.CURIOSITY);
-        Log.d(TAG, "Preferred rover: " + rover);
-
-        return rover;
-    }
-
-    private String getLanguagePreference() {
-        Log.d(TAG, "Fetching preferred language...");
-        SharedPreferences sharedPreferences =
-                PreferenceManager.getDefaultSharedPreferences(this);
-
-        String language = sharedPreferences.getString(Config.LANGUAGE_PREFERENCE, Config.LANGUAGE_DEFAULT);
-        Log.d(TAG, "Preferred language: " + language);
-
-        return language;
-    }
 
     // Give an indication that the app is loading
     public void showProgressBar() {
@@ -221,6 +147,72 @@ public class MainActivity extends AppCompatActivity implements
 
         mLoadingIndicator.setVisibility(View.INVISIBLE);
         mPhotoRecyclerView.setVisibility(View.VISIBLE);
+    }
+
+
+
+    /* ---- BEGIN OPTIONS MENU METHODS ---- */
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        Log.d(TAG, "Creating the options menu...");
+
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu, menu);
+
+        return true;
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Log.d(TAG, "onOptionsItemSelected was called");
+
+        //item is null when the menu has to be closed with no user input
+        if(item == null) {
+            return true;
+        }
+
+        switch (item.getItemId()) {
+            case R.id.rover_preferences:
+                Intent startPreferencesActivity = new Intent(this, PreferenceActivity.class);
+                startActivity(startPreferencesActivity);
+                return true;
+
+                default:
+                    return super.onOptionsItemSelected(item);
+        }
+    }
+
+    /* ---- END OPTIONS MENU METHODS ---- */
+
+
+
+    /* ---- BEGIN LOADER METHODS ---- */
+
+    /* Starts the background task to get photos from a given rover */
+    private void getPhotos(LoaderMode mode) {
+        Log.d(TAG, "Started process to fetch images...");
+
+        String rover = PreferenceHandler.getRoverPreference(this);
+
+        URL photoURL = URLBuilder.buildPhotoFetchingURL(rover);
+
+        Bundle queryBundle = new Bundle();
+        queryBundle.putString(Config.SEARCH_QUERY_URL_EXTRA, photoURL.toString());
+
+
+        switch (mode) {
+            case RESTART:
+                Log.d(TAG, "Restarting loader...");
+
+                showToast = true;
+                getSupportLoaderManager().restartLoader(Config.PHOTO_FETCHING_LOADER, queryBundle, this);
+                break;
+
+            case INIT:
+                Log.d(TAG, "Initializing loader...");
+
+                getSupportLoaderManager().initLoader(Config.PHOTO_FETCHING_LOADER, queryBundle, this);
+        }
     }
 
     @NonNull
@@ -265,54 +257,21 @@ public class MainActivity extends AppCompatActivity implements
         Log.d(TAG, "onLoaderReset was called");
     }
 
+    /* ---- END LOADER METHODS ---- */
+
+
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         Log.d(TAG, "A preference has changed!");
 
         if(key.equals(getString(R.string.preference_rover))) {
-            Log.d(TAG, "The preference for rover has changed, restarting the Loader...");
-            restartLoader();
+            Log.d(TAG, "The preference for rover has changed");
+
+            getPhotos(LoaderMode.RESTART);
         } else if(key.equals(getString(R.string.preference_language))) {
-            Log.d(TAG, "The preference for the language has changed, setting language...");
-            languageChanged = true;
-            setLocale();
+            Log.d(TAG, "The preference for the language has changed, allowing refresh on resume");
+
+            languagePreferenceChanged = true;
         }
     }
-
-    private void setLocale() {
-        Log.d(TAG, "changing language...");
-        String language = getLanguagePreference();
-        Locale locale;
-
-        Configuration config = getResources().getConfiguration();
-
-        if(language.equals(Config.LANGUAGE_DEFAULT)) {
-            Log.d(TAG, "Changing language to system default");
-
-           locale = sSystemLocale;
-        } else if(language.equals(Config.LANGUAGE_ENGLISH)) {
-            Log.d(TAG, "Changing language to english");
-
-            locale = Locale.ENGLISH;
-        } else if(language.equals(Config.LANGUAGE_DUTCH)) {
-            Log.d(TAG, "Changing language to dutch");
-
-            locale = new Locale("nl");
-        } else {
-            locale = sSystemLocale;
-        }
-
-        Locale.setDefault(locale);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            config.setLocale(locale);
-        }
-        else {
-            config.locale = Locale.CANADA;
-        }
-
-        getBaseContext().getResources().updateConfiguration(config, null);
-        onConfigurationChanged(config);
-    }
-
 }
